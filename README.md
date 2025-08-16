@@ -6,6 +6,7 @@
 
 - Recap: Introduction to DevOps
 - Case Study: Crowdstrike
+- Case Study: Heroku Outage June 2025
 - Demo: GitHub MCP Server
 - Recap: Git Branching Strategies
 - Exercise: Protect your branch!
@@ -16,7 +17,7 @@
 
 ### What is DevOps?
 
-> DevOps is the combination of cultural philosophies, practices, and tools that increases an organization’s ability to deliver applications and services at high velocity.
+> DevOps is the combination of cultural philosophies, practices, and tools that increases an organization's ability to deliver applications and services at high velocity.
 
 <img width="1173" height="731" alt="image" src="https://github.com/user-attachments/assets/ddef6765-62f6-4c33-8ed1-43032a4571e1" />
 
@@ -110,6 +111,93 @@ On July 19, 2024, CrowdStrike released a faulty configuration update (Channel Fi
 - [danluu/post-mortems](https://github.com/danluu/post-mortems)
 - [snakescott/awesome-tech-postmortems](https://github.com/snakescott/awesome-tech-postmortems)
 - [jimmyl02/awesome-postmortems](https://github.com/jimmyl02/awesome-postmortems)
+
+---
+
+## Case Study: Heroku Outage - June 10, 2025
+
+### What Happened
+On June 10, 2025, Heroku customers began experiencing a widespread service disruption starting at 6:00 UTC, creating up to 24 hours of downtime for many customers. This issue was caused by an unintended system update across their production infrastructure, demonstrating how automated processes can become a single point of failure.
+
+### Timeline of Events
+
+**June 10, 2025:**
+- **06:00 UTC** - Heroku customers began experiencing service disruption
+- **06:03 UTC** - Heroku acknowledged the incident on its status page, stating "Beginning at 06:03 UTC, Heroku is having intermittent outages which are currently being investigated"
+- **21:48 UTC** - Heroku's status page stated they had resolved issues with dashboard.heroku.com and the site was accessible to customers
+
+**Recovery Period:**
+- **June 10-11** - Manual intervention required to restart affected dynos
+- Services gradually restored over multiple days
+
+### Impact Scale
+- **Global outage** affecting thousands of businesses worldwide
+- SolarWinds reported "incident with log delivery from Heroku to SolarWinds Observability SaaS due to an ongoing Heroku incident"
+- Developers locked out of dashboards and CLI tools
+- Many applications became completely inoperable
+- Communication during the incident did not meet their standards, leaving many users unable to access accurate status updates
+
+### Technical Details
+- **Root Cause:** Unexpected weaknesses in infrastructure with lack of sufficient immutability controls that allowed an automated process to make unplanned changes to production environment
+- **Affected Services:** Authentication systems, deployment pipelines, Heroku Connect, dashboard access
+- **Communication Breakdown:** Status page being impacted by the incident itself
+- **Recovery Method:** Dynos exhibiting connectivity issues could be replaced by stopping each dyno in the app's formation using Heroku CLI
+
+### Heroku's Response and Lessons Learned
+
+**Immediate Actions:**
+- Disabled the automated upgrade service during the incident (June 10), with permanent controls coming early next week
+
+**Long-term Improvements:**
+1. **Ensuring Immutable Infrastructure:** The root cause was an unexpected change to the running environment. Permanent controls implemented to prevent automated upgrades from affecting production
+
+2. **Guaranteeing Communication Channels:** Building backup communication channels that are fully independent to ensure timely and transparent updates, even in worst-case scenarios
+
+3. **Accelerating Investigation and Recovery:** Overhauling incident response tooling and processes, building new tools to help engineers diagnose issues faster and run queries across entire fleet at scale
+
+### Industry Impact and Pattern of Outages
+
+This incident was part of a concerning pattern of reliability issues:
+
+**Recent Heroku Outages:**
+- **June 10, 2025:** 15-hour disruption preventing developers from accessing platform dashboard, utilizing CLI tools, and rendering deployed applications completely inoperable
+- **June 18, 2025:** 8 hours and 30 minutes of issues with "dyno formations and autoscaling"
+- **July 16, 2025:** 3 hours and 35 minutes of "data.heroku.com Dashboard degradation" coinciding with "Performance Degradation for Common Runtime in EU Region"
+
+**Developer Community Response:**
+- The growing concern over Heroku's reliability, compounded by the discontinuation of its free tier in late 2022 and escalating costs for paid plans, has accelerated the widespread search for more stable, transparent, and competitively priced PaaS solutions
+- Many teams are migrating to alternatives like Northflank, Railway, and other PaaS providers
+
+### DevOps Lessons from Heroku Outage
+
+| Stage        | Lessons Learned                                                                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Planning** | Need for comprehensive disaster recovery plans and independent communication channels during outages.                               |
+| **Coding**   | Implement immutability controls and prevent automated systems from making unplanned production changes.                            |
+| **Build**    | Ensure build processes have proper validation before affecting production infrastructure.                                           |
+| **Test**     | Test automated upgrade processes in staging environments that mirror production complexity.                                        |
+| **Release**  | Implement gradual rollouts for infrastructure changes, not just application deployments.                                          |
+| **Deploy**   | Have immediate rollback capabilities for infrastructure changes and automated processes.                                           |
+| **Operate**  | Maintain independent operational tooling that doesn't depend on the primary platform being functional.                            |
+| **Monitor**  | Implement external monitoring and alerting systems that can detect issues even when primary systems are down.                     |
+
+### Comparison: CrowdStrike vs Heroku
+
+| Aspect              | CrowdStrike (July 2024)                    | Heroku (June 2025)                           |
+| ------------------- | ------------------------------------------- | --------------------------------------------- |
+| **Root Cause**      | Configuration file validation error         | Automated infrastructure update gone wrong    |
+| **Duration**        | ~18 hours for most systems                  | Up to 24 hours                               |
+| **Scope**           | 8.5 million Windows devices globally       | Thousands of businesses using Heroku PaaS    |
+| **Recovery Method** | Manual file deletion and system restart    | Manual dyno restart via CLI                  |
+| **Communication**   | Regular updates via status pages           | Status page also affected by outage          |
+| **Industry Impact** | Largest IT outage in history               | Accelerated PaaS provider migration          |
+
+Both incidents highlight the critical importance of:
+- **Robust testing** of automated systems
+- **Gradual deployment** strategies
+- **Independent communication** channels during outages
+- **Comprehensive rollback** procedures
+- **Monitoring and alerting** systems that don't depend on the primary infrastructure
 
 ---
 
